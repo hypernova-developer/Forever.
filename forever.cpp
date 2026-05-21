@@ -2,7 +2,10 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <fstream>
 #include <cstdlib>
+#include <chrono>
+#include <ctime>
 
 namespace fs = std::filesystem;
 
@@ -20,10 +23,21 @@ void show_version()
 {
     std::cout << "---------------------------------------------------\n";
     std::cout << "[Forever. Automation Engine]\n";
-    std::cout << "Version: 1.0.0-LTS\n";
+    std::cout << "Version: 2.0.0-LTS \"Logging Edition\"\n";
     std::cout << "Developer: hypernova-developer\n";
     std::cout << "Environment: Windows (CMD Optimized)\n";
     std::cout << "---------------------------------------------------\n";
+}
+
+void log_operation(const std::string& message)
+{
+    std::ofstream log_file("forever_history.log", std::ios::app);
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char buf[26];
+    ctime_s(buf, sizeof(buf), &now);
+    std::string ts(buf);
+    ts.pop_back();
+    log_file << "[" << ts << "] " << message << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -88,5 +102,8 @@ int main(int argc, char* argv[])
     }
 
     std::cout << "[Success] Mission Accomplished -> Repository synchronized successfully via Forever.\n";
+
+    log_operation("Successfully synchronized branch [" + branch_name + "] with message: \"" + commit_message + "\"");
+
     return 0;
 }
